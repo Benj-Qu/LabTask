@@ -13,6 +13,7 @@ struct LabTaskApp: App {
         WindowGroup {
             ContentView()
                 .environmentObject(DataStore())
+                .environmentObject(IfText())
                 .preferredColorScheme(.dark)
         }
     }

@@ -50,21 +50,21 @@ struct ProgramView: View {
     }
     
     func addIfInstr ()  {
-        dataStore.addInstr(instrName: "if", isIf: true, isEndif: false)
-        dataStore.addInstr(instrName: "else", isIf: true, isEndif: false)
-        dataStore.addInstr(instrName: "end if", isIf: false, isEndif: true)
+        dataStore.addInstr(instrName: "if", isIf: true, isElseif: false, isEndif: false)
+        dataStore.addInstr(instrName: "else", isIf: false, isElseif: true, isEndif: false)
+        dataStore.addInstr(instrName: "end if", isIf: false, isElseif: false, isEndif: true)
     }
     
     func addDVInstr ()  {
-        dataStore.addInstr(instrName: "Declare Variable", isIf: false, isEndif: false)
+        dataStore.addInstr(instrName: "Declare Variable", isIf: false, isElseif: false, isEndif: false)
     }
     
     func addAOInstr ()  {
-        dataStore.addInstr(instrName: "Arithmetic Calculation", isIf: false, isEndif: false)
+        dataStore.addInstr(instrName: "Arithmetic Calculation", isIf: false, isElseif: false, isEndif: false)
     }
     
     func addMOInstr ()  {
-        dataStore.addInstr(instrName: "Memory Operation", isIf: false, isEndif: false)
+        dataStore.addInstr(instrName: "Memory Operation", isIf: false, isElseif: false, isEndif: false)
     }
 }
 
@@ -72,17 +72,35 @@ struct InstrView: View {
     
     var instr: Instr
     
-    
+    @EnvironmentObject var ifText: IfText
     
     var body: some View {
-        if instr.indented {
+        if instr.isIf {
             HStack {
-                Text("   ")
-                Text(instr.name)
+                Text("if")
+                
+                Menu (ifText.text) {
+                    Button("larger than",
+                           action: ifText.modifyTextlg)
+                    Button("equal to",
+                           action: ifText.modifyTextel)
+                    Button("less than",
+                           action: ifText.modifyTextlt)
+                    Button("no less than",
+                           action: ifText.modifyTextnlt)
+                }
             }
         }
         else {
-            Text(instr.name)
+            if instr.indented {
+                HStack {
+                    Text("   ")
+                    Text(instr.name)
+                }
+            }
+            else {
+                Text(instr.name)
+            }
         }
         
     }
@@ -91,10 +109,36 @@ struct InstrView: View {
 
 }
 
+class IfText: ObservableObject {
+    @Published var text: String
+    
+    init () {
+        text = "Add Condition"
+    }
+    
+    
+    func modifyTextlg () {
+        text = "larger than"
+    }
+    
+    func modifyTextel () {
+        text = "equal to"
+    }
+    
+    func modifyTextlt () {
+        text = "less than"
+    }
+    
+    func modifyTextnlt () {
+        text = "no less than"
+    }
+}
+
 struct ProgramView_Previews: PreviewProvider {
     static var previews: some View {
         ProgramView()
             .environmentObject(DataStore())
+            .environmentObject(IfText())
             .preferredColorScheme(.dark)
     }
 }
